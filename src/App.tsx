@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import Layout from "./components/Layout"
+import Notify from "./components/system/Notify"
+import Login from "./pages/Login"
+import { setUser } from "./store/authSlice"
+import { AppDispatch, RootState } from "./store/store"
+
 
 function App() {
+  const token = localStorage.getItem('token')
+  const userStorage = localStorage.getItem('user')
+  const dispatch = useDispatch<AppDispatch>()
+  const user = useSelector((state: RootState) => state.auth.user)
+
+  useEffect(() => {
+    if (token && userStorage) {
+      dispatch(setUser(JSON.parse(userStorage)))
+    }
+  }, [dispatch, token, userStorage])
+
+  useEffect(() => {}, [user])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      {!userStorage
+        ? <Login />
+        : <Layout />
+      }
+      
+      <Notify />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
